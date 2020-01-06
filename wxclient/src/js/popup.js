@@ -79,6 +79,7 @@ let TimeKeeper = {
     cancelTimeSave: function() {
         this.log("Canceling time save...");
         this._view.hideTimeEdit();
+        this._view.clearError();
     },
 
     setTimeMinutes: function(minutes) {
@@ -125,6 +126,11 @@ let TkView = {
         });
         document.getElementById("ErrorsList").innerHTML = s;
         this._errorDiv.classList.remove("hidden");
+    },
+
+    clearError: function() {
+        this._errorMsg.innerText = "";
+        this._errorDiv.classList.add("hidden");
     },
 
     showProjectsList: function () {
