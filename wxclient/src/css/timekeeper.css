@@ -1,0 +1,11 @@
+.hidden {
+    display: none;
+}
+.visible {
+    display: initial;
+}
+
+/* Fix bootstrap */
+.btn:focus {
+    box-shadow: none !important;
+}
