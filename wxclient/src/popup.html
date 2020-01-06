@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>TimeKeeper</title>
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fontawesome -->
+    <link href="./css/fa/css/all.min.css" rel="stylesheet">
+    <!-- TimeKeeper -->
+    <link href="./css/timekeeper.css" rel="stylesheet">
+</head>
+
+<body style="max-width: 500px;">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">TimeKeeper</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" onclick="TimeKeeper.showLogTime(); return false;" title="Log time"><i class="fas fa-plus"></i></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" onclick="TimeKeeper.showProjectsList(); return false;" title="Projects list"><i class="fas fa-tasks"></i></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Project</a>
+                    <div id="ProjectsDropdown" class="dropdown-menu" aria-labelledby="ProjectsDropdown">
+                        <a class="dropdown-item tk-project-link" data-id="FakeProjectUid1" href="#">Vida</a>
+                        <a class="dropdown-item tk-project-link" data-id="FakeProjectUid2" href="#">SSI</a>
+                        <a class="dropdown-item" onclick="onAddProjectClicked(); return false;" href="#">Add other...</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <a class="nav-link" href="#">Aleksej V.</a>&nbsp;
+                <button class="btn btn-secondary my-2 my-sm-0">Login</button>
+            </form>
+        </div>
+    </nav>
+
+    <main role="main" class="container" style="padding-top: 4rem;">
+        
+        <div id="ErrorDiv">
+            <div id="ErrorMsg" class="badge-danger white p-1 text-center">.</div>
+            <ul id="ErrorsList" style="border-left: solid darkgray 1px; border-right: solid darkgray 1px; border-bottom: solid darkgray 1px;"></ul>
+        </div>
+
+        <div id="ProjectTimes">
+            <table class="table table-condensed table-borderless table-sm table-dark">
+                <caption>Pricing</caption>
+                <tr>
+                    <td>Vida, 10 &euro; / hour</td>
+                    <td class="text-right"><b class="text-warning">12.50 &euro;</b></td>
+                </tr>
+            </table>
+            <table class="table table-condensed table-striped table-hover table-sm">
+                <caption>Time spent on project</caption>
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th colspan="2">Timing (<b>2h 15min</b>)</th>
+                        <th>
+                            <a href="#" class="text-white" title="Log new time"><i class="fas fa-plus"></i></a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2019-12-03</td>
+                        <td>15 min</td>
+                        <td>Test</td>
+                        <td>
+                            <a href="#" title="Delete"><i class="fas fa-ban text-danger"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2019-12-02</td>
+                        <td>1h 30min</td>
+                        <td>Big fixes</td>
+                        <td>
+                            <a href="#" title="Delete"><i class="fas fa-ban text-danger"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2019-12-01</td>
+                        <td>30 min</td>
+                        <td>Small fixes</td>
+                        <td>
+                            <a href="#" title="Delete"><i class="fas fa-ban text-danger"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="ProjectEdit">
+            <form class="mb-3">
+                <label for="ProjectName">Name of project</label>
+                <input type="text" id="ProjectName" value="" placeholder="Name of project" class="form-control form-contorl-sm" />
+                <label for="PriceOfMinute">Price of minute</label>
+                <input type="number" id="PriceOfMinute" value="" placeholder="Price of minute" class="form-control form-contorl-sm col-md-4" />
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="ProjectEnabled">
+                    <label class="form-check-label" for="ProjectEnabled">Enabled</label>
+                </div>
+                <div class="form-row">
+                    <div class="btn-group">
+                        <button id="BtnProjectSave" class="btn btn-sm btn-success">Save</button>
+                        <button id="BtnProjectCancel" class="btn btn-sm btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="TimeEdit">
+            <form class="mb-3">
+                <caption>Log time</caption>
+                <div class="form-row mb-3">
+                    <label for="TimeProjectId">Project to log time</label>
+                    <select id="TimeProjectId" class="form-control">
+                        <option value="">Choose</option>
+                        <option value="FakeProjectUid1">Vida</option>
+                        <option value="FakeProjectUid2">SSI</option>
+                    </select>
+                </div>
+                <div class="form-row mb-3 justify-content-between">
+                    <div class="col">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><i class="fas fa-clock"></i></div>
+                            </div>
+                            <input id="TimeMinutes" type="number" class="form-control" placeholder="Enter minutes">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="btn-toolbar">
+                            <div class="btn-group btn-group-sm mr-2">
+                                <button data-val="15" class="tk-time-button btn btn-secondary">15</button>
+                                <button data-val="30" class="tk-time-button btn btn-secondary">30</button>
+                                <button data-val="45" class="tk-time-button btn btn-secondary">45</button>
+                                <button data-val="60" class="tk-time-button btn btn-secondary">1h</button>
+                                <button data-val="90" class="tk-time-button btn btn-secondary">1h 30</button>
+                                <button data-val="120" class="tk-time-button btn btn-secondary">2h</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <input type="text" id="TimeRemarks" class="form-control" placeholder="Enter remarks">
+                </div>
+                <div class="form-row">
+                    <div class="btn-group btn-group-sm">
+                        <button id="BtnTimeSave" type="button" class="btn btn-success">Log time</button>
+                        <button id="BtnTimeCancel" type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="ProjectsList">
+            <table class="table table-condensed table-striped table-hover table-sm">
+                <caption>List of projects</caption>
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Project name</th>
+                        <th>Pricing</th>
+                        <th>Debt</th>
+                        <th class="text-center">
+                            <a href="#" class="text-white" title="Create new project" onclick="onAddProjectClicked(); return false;"><i class="fas fa-plus"></i></a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#">SSI</a></td>
+                        <td>10 &euro; / hour</td>
+                        <td>12.50 &euro;</td>
+                        <td class="text-center">
+                            <a href="#" class="text-danger" title="Disable project"><i class="fas fa-ban"></i></a>
+                            <a href="#" class="text-primary" title="Log payment"><i class="fas fa-coins"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main><!-- /.container -->
+    <script src="./js/jquery-3.4.1.slim.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/mustache.min.js"></script>
+    <script src="./js/repository.js"></script>
+    <script src="./js/popup.js"></script>
+</body>
+
+<script>
+
+    jQuery(function () {
+        console.log("Initializing....");
+        TimeKeeper.init();
+
+        TkView.showTimeEdit();
+
+        jQuery(".tk-project-link").click(function(e) {
+            console.log(e.target);
+            e.preventDefault();
+            let projectId = jQuery(e.target).attr("data-id");
+            console.log("Getting data-id: " + projectId);
+            TimeKeeper.showTimingForProject(projectId);
+        });
+        jQuery(".tk-time-button").click(function(e) {
+            console.log(e.target);
+            e.preventDefault();
+            // console.log("Minutes: " + tkGetDataAttribute(e.target, "data-val"));
+            TimeKeeper.setTimeMinutes(tkGetDataAttribute(e.target, "data-val"));
+        })
+
+        document.getElementById("BtnProjectSave").addEventListener("click", function() {
+            TimeKeeper.saveProject();
+        });
+        document.getElementById("BtnProjectCancel").addEventListener("click", function() {
+            TimeKeeper.cancelProjectSave();
+        });
+
+        // Timing
+        document.getElementById("BtnTimeSave").addEventListener("click", function() {
+            TimeKeeper.saveTime();
+        });
+        document.getElementById("BtnTimeCancel").addEventListener("click", function() {
+            TimeKeeper.cancelTimeSave();
+        })
+    });
+
+    function onAddProjectClicked() {
+        TimeKeeper.showProjectEdit("");
+    }
+
+    function tkGetDataAttribute(el, attributeName) {
+        return jQuery(el).attr(attributeName);
+    }
+
+</script>
+
+
+<script id="TemplateProjectsDropdown" type="x-tmpl-mustache">
+    {{#projects}}
+        <a class="dropdown-item tk-project-link" data-id="{{projectId}}" href="#">{{name}}</a>
+    {{/projects}}
+</script>
+
+</html>
