@@ -1,0 +1,239 @@
+<html>
+    <head>
+        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <link href="./css/fa/css/all.min.css" rel="stylesheet">
+        <link href="./css/tk.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Header with menu -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top mb-2">
+            <a class="navbar-brand" href="#">TimeKeeper</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showTimeEdit" class="nav-link" title="Log time"><i class="fas fa-plus"></i></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showProjectsList" class="nav-link" title="Projects list"><i class="fas fa-tasks"></i></a data-bind="click: showProjectsList">
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a data-bind="visible: userData().isLoggedIn(), click: toggleProjectDropdown" class="nav-link dropdown-toggle">Project</a>
+                        <div data-bind="foreach: projects, class: projectDropdownClass" aria-labelledby="ProjectsDropdown">
+                            <a data-bind="text: name, value: projectId, click: $root.goToProject" class="dropdown-item"></a>
+                        </div>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <a data-bind="text: userData().nick, attr: {title: userData().userId}" class="nav-link text-white">Aleksej V.</a>&nbsp;
+                    <button data-bind="visible: userData().isLoggedIn(), click: logout" class="btn btn-secondary my-2 my-sm-0">Logout</button>
+                    <button data-bind="visible: !userData().isLoggedIn()" class="btn btn-secondary my-2 my-sm-0">Login</button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Error message -->
+        <div data-bind="visible: errorMessage().message.length > 0">
+            <div class="alert alert-danger col-4 offset-4 pt-0 pb-0 mt-6">
+                <a data-bind="click: clearErrorMessage" class="close" aria-label="close">&times;</a>
+                <h6 data-bind="text: errorMessage().message" class="alert-heading"></h6>
+                <hr>
+                <ul data-bind="foreach: errorMessage().errors">
+                    <li data-bind="text: $data" class="small"></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Login form -->
+        <div data-bind="visible: !userData().isLoggedIn()" class="container mt-6" style="max-width: 30em;">
+            <div class="row col-4">
+                <form>
+                    <div class="form-row mb-1">
+                        <input data-bind="value: loginModel().email" type="text" class="form-control form-control-sm" placeholder="Enter your e-mail" />
+                    </div>
+                    <div class="form-row mb-1">
+                        <input data-bind="value: loginModel().password" type="password" class="form-control form-control-sm" placeholder="Enter your password" />
+                    </div>
+                    <div class="btn-group">
+                        <button data-bind="click: login" class="btn btn-sm btn-primary">Login</button>
+                        <button class="btn btn-sm btn-danger">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div data-bind="visible: userData().isLoggedIn()" class="container mt-6" style="max-width: 30em;">
+            <!-- List of projects -->
+            <div data-bind="visible: isProjectsListVisible">
+                <h3 data-bind="text: selectedProject().name"></h3>
+                <table class="table table-bordered table-hover table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Cost per hour</th>
+                            <th>Enabled</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: projects">
+                        <tr>
+                            <td><i data-bind="attr: { title: projectId }" class="fas fa-id-badge"></i></td>
+                            <td><input data-bind="value: name" class="form-control form-control-sm" /></td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input data-bind="value: costPerHour" class="form-control" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><span data-bind="text: costPerMinuteFmt"></span> / min.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <!-- <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input data-bind="checked: enabled" type="checkbox" class="form-check-input" />
+                                    </label>
+                                </div> -->
+                                <div class="custom-control custom-switch">
+                                    <input data-bind="checked: enabled, attr: { id: projectId }" type="checkbox" class="custom-control-input" />
+                                    <label data-bind="attr: { for: projectId }" class="custom-control-label" for="switch1"></label>
+                                  </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- List of times spent -->
+            <div data-bind="visible: isTimesListVisible">
+                <!-- Filter for time entries -->
+                <ul data-bind="visible: filterForTimes().doFiltering()" class="list-group">
+                    <li data-bind="visible: filterForTimes().projectName.length > 0" class="list-group-item">
+                        Project: 
+                        <span data-bind="text: filterForTimes().projectName"></span>
+                        <a data-bind="click: removeFilterByProject" class="close">&times;</a>
+                    </li>
+                    <li data-bind="visible: filterForTimes().isPaid != null" class="list-group-item">
+                        Is paid:
+                        <span data-bind="text: filterForTimes().isPaid"></span>
+                        <a data-bind="click: removeFilterByPaidStatus" class="close">&times;</a>
+                    </li>
+                </ul>
+                <!-- Time entries -->
+                <table class="table table-bordered table-hover table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Paid</th>
+                            <th>Project</th>
+                            <th>Date</th>
+                            <th nowrap>Time (min.)</th>
+                            <th>Price</th>
+                            <th>Remarks</th>
+                            <th class="text-nowrap">
+                                <a data-bind="click: showTimeEdit" title="Log some time"><i class="fas fa-plus text-primary small"></i></a>
+                                <a data-bind="click: loadTimeEntries" title="Reload times"><i class="fas fa-sync-alt text-primary small"></i></a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="visible: times().length < 1">
+                        <tr>
+                            <td colspan="7" class="text-center">No times were logged.</td>
+                        </tr>
+                    </tbody>
+                    <tbody data-bind="foreach: times">
+                        <tr>
+                            <td class="text-center">
+                                <span data-bind="if: isPaid">
+                                    <i data-bind="click: $parent.filterByPaidStatus" title="Filter paid time entries" class="fas fa-check text-success small"></i>
+                                </span>
+                                <span data-bind="ifnot: isPaid">
+                                    <i data-bind="click: $parent.filterByPaidStatus" title="Filter not paid time entries" class="fas fa-minus text-danger small"></i>
+                                </span>
+                            </td>
+                            <td class="text-nowrap">
+                                <a data-bind="click: $parent.filterByProject" title="Filter time entries by this project"><i class="fas fa-filter small text-primary"></i></a>
+                                <span data-bind="text: projectName" class="small"></span>
+                            </td>
+                            <td data-bind="text: date" class="small text-nowrap"></td>
+                            <td data-bind="text: minutes" class="small"></td>
+                            <td data-bind="text: priceFmt" class="small"></td>
+                            <td data-bind="text: remarks" class="small"></td>
+                            <td class="text-nowrap">
+                                <a data-bind="click: $parent.deleteTimeEntry" title="Delete Time entry"><i class="fas fa-trash small text-danger"></i></a>
+                                <a data-bind="click: $parent.togglePaidStatus" title="Toggle payment status of Time entry"><i class="fas fa-file-invoice-dollar small text-danger"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Create/edit project -->
+            <div data-bind="visible: isProjectEditVisible">
+                <form data-bind="submit: createProject">
+                    <label for="ProjectName">Name of project</label>
+                    <input data-bind="value: projectToEdit().name" type="text" id="ProjectName" value="" placeholder="Name of project" class="form-control form-contorl-sm" />
+                    <label for="PriceOfMinute">Price of minute</label>
+                    <input type="number" id="PriceOfMinute" value="" placeholder="Price of minute" class="form-control form-contorl-sm col-md-4" />
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="ProjectEnabled">
+                        <label class="form-check-label" for="ProjectEnabled">Enabled</label>
+                    </div>
+                    <div class="form-row">
+                        <div class="btn-group">
+                            <button id="BtnProjectSave" class="btn btn-sm btn-success">Save</button>
+                            <button data-bind="click: cancelEditProject" id="BtnProjectCancel" class="btn btn-sm btn-danger">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Create/edit time -->
+            <div data-bind="visible: isTimeEditVisible">
+                <form class="mb-3">
+                    <caption>Log time</caption>
+                    <div class="form-row mb-3">
+                        <input data-bind="value: timeToEdit().date" class="form-control" placeholder="Date" />
+                    </div>
+                    <div class="form-row mb-3">
+                        <label for="TimeProjectId">Project to log time <span data-bind="text: timeToEdit().costPerMinuteFmt"></span> </label>
+                        <select data-bind="options: projects, 
+                                        optionsText: 'name',
+                                        value: timeToEdit().project" id="TimeProjectId" class="form-control"></select>
+                    </div>
+                    <div class="form-row mb-3 justify-content-between">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><i class="fas fa-clock"></i></div>
+                            </div>
+                            <input data-bind="value: timeToEdit().minutes" id="TimeMinutes" type="number" class="form-control form-contorl-sm" placeholder="Enter minutes">
+                            <div class="input-group-append" data-bind="foreach: timeButtons">
+                                <div data-bind="text: minutesFmt, click: $root.setMinutes" class="input-group-text"><i>15</i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <input data-bind="value:  timeToEdit().remarks" type="text" class="form-control" placeholder="Enter remarks">
+                    </div>
+                    <div class="form-row">
+                        <div class="btn-group btn-group-sm">
+                            <button data-bind="click: createTime" type="button" class="btn btn-success">Log time</button>
+                            <button data-bind="click: cancelCreateTime" type="button" class="btn btn-danger">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div data-bind="visible: !userData().isLoggedIn()">
+
+    </body>
+
+    <script src="./js/knockout-3.5.1.js"></script>
+    <script src="./js/models.js"></script>
+    <script src="./js/helpers.js"></script>
+    <script src="./js/validator.js"></script>
+    <script src="./js/repository.js"></script>
+    <!-- <script src="./js/mockRepository.js"></script> -->
+    <script src="./js/app.js"></script>
+</html>
