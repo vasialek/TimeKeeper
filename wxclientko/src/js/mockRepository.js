@@ -35,8 +35,18 @@ let Repository = {
         }),
     ],
     _projects: [
-        new ProjectEntry("ba14259570aa4226871b855c39d884d8", "Vida", 2000, true),
-        new ProjectEntry("9a3d967b2eb74eff9c631bb341db6a82", "SSI", 1000, true),
+        {
+            projectId: "ba14259570aa4226871b855c39d884d8", 
+            name: "Vida", 
+            costPerHourMinor: 2000, 
+            isEnabled: true
+        },
+        {
+            projectId: "9a3d967b2eb74eff9c631bb341db6a82", 
+            name: "SSI", 
+            costPerHourMinor: 1000, 
+            isEnabled: true
+        },
     ],
 
     login: function (credentials, callback, errorCallback) {
