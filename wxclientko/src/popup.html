@@ -14,18 +14,23 @@
             </button>
     
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a data-bind="visible: userData().isLoggedIn(), click: showTimeEdit" class="nav-link" title="Log time"><i class="fas fa-plus"></i></a>
-                    </li>
-                    <li class="nav-item active">
-                        <a data-bind="visible: userData().isLoggedIn(), click: showProjectsList" class="nav-link" title="Projects list"><i class="fas fa-tasks"></i></a data-bind="click: showProjectsList">
-                    </li>
+                <ul class="navbar-nav mr-3">
                     <li class="nav-item dropdown">
                         <a data-bind="visible: userData().isLoggedIn(), click: toggleProjectDropdown" class="nav-link dropdown-toggle">Project</a>
                         <div data-bind="foreach: projects, class: projectDropdownClass" aria-labelledby="ProjectsDropdown">
                             <a data-bind="text: name, value: projectId, click: $root.goToProject" class="dropdown-item"></a>
                         </div>
+                    </li>
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showTimeEdit" class="nav-link" title="Log time"><i class="fas fa-plus"></i></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showProjectsList" class="nav-link" title="Projects list"><i class="fas fa-tasks"></i></a>
+                    </li>
+                </ul>
+                <ul data-bind="foreach: customProjects, visible: userData().isLoggedIn()" class="navbar-nav mr-auto">
+                    <li class="nav-itme active">
+                        <a data-bind="click: $parent.showCustomProject, attr: {title: name}" class="text-primary cursor-pointer"><span data-bind="text: name"></span></a>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
@@ -101,6 +106,54 @@
                                     <input data-bind="checked: enabled, attr: { id: projectId }" type="checkbox" class="custom-control-input" />
                                     <label data-bind="attr: { for: projectId }" class="custom-control-label" for="switch1"></label>
                                   </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- List of custom project entries -->
+            <div data-bind="visible: selectedCustomProject().projectId != ''">
+                <h4>Custom <span data-bind="text: selectedCustomProject().name"></span></h4>
+                <table class="table table-bordered table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Count</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-bind="foreach: customEntries">
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <a data-bind="click: $parent.deleteTimeEntry" title="Delete custom entry"><i class="fas fa-trash small text-danger"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input data-bind="value: customEntryDate" placeholder="Data (yyyy-MM-dd)" />
+                            </td>
+                            <td colspan="2">
+                                <a data-bind="click: $root.saveCustomEdit" class="btn btn-success btn-sm"><i class="fas fa-check"></i></a>
+                                <a data-bind="click: $root.clearCustomEdit" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a>
+                            </td>
+                        </tr>
+                        <!-- Custom count -->
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-row mb-3 justify-content-between">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text"><i class="fas fa-calculator"></i></div>
+                                        </div>
+                                        <input data-bind="value: customEntryCount" type="number" class="form-control form-contorl-sm" placeholder="Enter minutes">
+                                        <div class="input-group-append" data-bind="foreach: selectedCustomProject().customTimes()">
+                                            <div data-bind="text: $data, click: $root.setCustomCount" class="input-group-text cursor-pointer"><i></i></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

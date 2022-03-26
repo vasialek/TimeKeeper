@@ -49,6 +49,10 @@ let Repository = {
         },
     ],
 
+    _customProjects: [
+        new CustomProjectEntry("a84c967b2eb74eff9c631bb341db83d1", "G19")
+    ],
+
     login: function (credentials, callback, errorCallback) {
         let errors = TkValidator.validateLogin(credentials);
         if (errors.length > 0) {
@@ -62,6 +66,21 @@ let Repository = {
             email: "fake@email.zzz",
             jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdXNlciIsImlhdCI6MTUxNjIzOTAyMiwidWlkIjoiMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMiJ9.tUFNdahdZXrWUYfKyBCGjI9EqUUvxpJZj5Hqd2c4omo",
         });
+    },
+
+    createCustomEntry: function(user, entry, callbak, errorCallback) {
+        if (TkHelper.isValidJwt(user.jwt) == false) {
+            errorCallback(["You are not logged in. Please re-login."]);
+            return;
+        }
+
+        let errors = TkValidator.validateTimeEntry(timeEntry);
+        if (errors.length > 0) {
+            errorCallback(errors);
+            return;
+        }
+
+        callbak(entry);
     },
 
     createTimeEntry: function(user, timeEntry, callback, errorCallback) {
@@ -131,4 +150,13 @@ let Repository = {
 
         callback(this._projects);
     },
+
+    loadCustomProjects: function(user, callback, errorCallback) {
+        if (TkHelper.isValidJwt(user.jwt) == false) {
+            errorCallback(["You are not logged in. Please re-login."]);
+            return;
+        }
+
+        callback(this._customProjects);
+    }
 };

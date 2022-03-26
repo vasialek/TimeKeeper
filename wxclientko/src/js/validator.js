@@ -15,6 +15,19 @@ let TkValidator = {
         return errors;
     },
 
+    validateCustomEntry: function(entry) {
+        let errors = [];
+
+        if (entry.projectId < 1) {
+            errors.push("You entry is not linked to any project.");
+        }
+        if (entry.minutes < 1) {
+            errors.push("Please specify amount for entry.");
+        }
+
+        return errors;
+    },
+
     ensureCouldModify: function(jwt, ownerId, errorMsg = "You can't modify this object.") {
         let errors = [];
 

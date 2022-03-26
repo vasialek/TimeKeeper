@@ -13,11 +13,19 @@ function TimeKeeperViewModel() {
     self.errorMessage = ko.observable(new ErrorMessage("", []));
 
     self.projects = ko.observableArray([]);
+    self.customProjects = ko.observableArray([]);
 
     self.timeButtons = [
         new MinutesEntry(15), new MinutesEntry(30), new MinutesEntry(45), 
         new MinutesEntry(60), new MinutesEntry(90), new MinutesEntry(120), 
     ];
+    // Custom project display/edit
+    self.selectedCustomProject = ko.observable(new CustomProjectEntry("", "G19"));
+    self.customEntries = ko.observableArray([]);
+    self.customTimes = ko.observableArray([]);
+    self.customEntryDate = ko.observable(TkHelper.getCurrentDate());
+    self.customEntryCount = ko.observable(0);
+    
     self.selectedProject = ko.observable(new ProjectEntry("", "", 0));
     self.times = ko.observableArray([]);
     self.timeToEdit = ko.observable(new TimeEntryEditable(null, TkHelper.getCurrentDate(), 0));
@@ -71,6 +79,17 @@ function TimeKeeperViewModel() {
         }, function(errors) {
             self.showErrorMessage("Error loading projects", errors, 20);
         });
+
+        Repository.loadCustomProjects(self.userData(), function(customProjects) {
+            console.table(customProjects);
+            self.customProjects.removeAll();
+            customProjects.forEach(p => {
+                const customProject = new CustomProjectEntry(p.projectId, p.name);
+                self.customProjects.push(customProject)
+            });
+        }, function(errors) {
+            self.showErrorMessage("Error loading custome projects", errors, 20);
+        })
     };
 
     self.filterByProject = function(timeEntry) {
@@ -146,6 +165,10 @@ function TimeKeeperViewModel() {
         self.timeToEdit().minutes(button.minutes);
     };
 
+    self.setCustomCount = function(count) {
+        self.customEntryCount(count);
+    }
+
     self.showTimeEdit = function() {
         self.isTimeEditVisible(true);
     };
@@ -156,6 +179,12 @@ function TimeKeeperViewModel() {
 
     self.showProjectsList = function() {
         self.isProjectsListVisible(true);
+    };
+
+    self.showCustomProject = function(customProject) {
+        console.log("Showing custom project:");
+        console.log(customProject);
+        self.selectedCustomProject(customProject);
     };
 
     self.logout = function () {
@@ -202,6 +231,18 @@ function TimeKeeperViewModel() {
 
     self.cancelCreateTime = function() {
         self.isTimeEditVisible(false);
+    };
+
+    self.saveCustomEdit = function() {
+        console.log("Saving entry for custom project:");
+        console.log(self.selectedCustomProject());
+        
+    };
+
+    self.clearCustomEdit = function() {
+        self.customEntryCount(0);
+        self.customEntryDate(TkHelper.getCurrentDate());
+        self.selectedCustomProject(new CustomProjectEntry("", ""));
     };
 
     self.deleteTimeEntry = function(timeEntry) {

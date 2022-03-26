@@ -65,6 +65,18 @@ function ProjectEntry(projectId, name, costPerHour, enabled = false) {
     });
 }
 
+class CustomProjectEntry {
+    constructor(projectId, name) {
+        let self = this;
+        self.projectId = projectId;
+        self.name = name;
+        self.customTimes = ko.computed(function() {
+            return [50, 75, 100, 150, 200];
+        });
+    }
+
+}
+
 function MinutesEntry(minutes) {
     let self = this;
     self.minutes = minutes;
