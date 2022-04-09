@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E591766B-BA23-4E9E-AE74-4494B5CCF622}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeperServerApi", "src\TimeKeeperServerApi\TimeKeeperServerApi.csproj", "{AAC5AA01-FF56-42F0-8F8F-2A905125B224}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AFC1C24B-6F04-47C1-94BC-613239BC0564}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeperServerApi.Tests", "test\TimeKeeperServerApi.Tests\TimeKeeperServerApi.Tests.csproj", "{43A83777-5A3F-4233-BA73-FEC93BD18C06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|x64.Build.0 = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Debug|x86.Build.0 = Debug|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|x64.ActiveCfg = Release|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|x64.Build.0 = Release|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|x86.ActiveCfg = Release|Any CPU
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224}.Release|x86.Build.0 = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|x64.Build.0 = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Debug|x86.Build.0 = Debug|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|x64.ActiveCfg = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|x64.Build.0 = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|x86.ActiveCfg = Release|Any CPU
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AAC5AA01-FF56-42F0-8F8F-2A905125B224} = {E591766B-BA23-4E9E-AE74-4494B5CCF622}
+		{43A83777-5A3F-4233-BA73-FEC93BD18C06} = {AFC1C24B-6F04-47C1-94BC-613239BC0564}
+	EndGlobalSection
+EndGlobal
