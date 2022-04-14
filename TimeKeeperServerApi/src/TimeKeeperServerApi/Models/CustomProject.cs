@@ -1,8 +1,8 @@
 namespace TimeKeeperServerApi.Models
 {
-    public class CustomTimeProject
+    public class CustomProject
     {
-        public string CustomTimeProjectId { get; set; }
+        public string CustomProjectId { get; set; }
 
         public string UserId { get; set; }
 

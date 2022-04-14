@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TimeKeeperServerApi.Interfaces;
@@ -7,18 +8,23 @@ namespace TimeKeeperServerApi.Controllers
     [Route("api/[controller]")]
     public class ProjectsController : ControllerBase
     {
-        private readonly ICustomProjectsRepository _customProjectsRepository;
+        public static readonly int MaxCustomProjects = 5;
+        
+        private readonly IProjectsRepository _projectsRepository;
 
-        public ProjectsController(ICustomProjectsRepository customProjectsRepository)
+        public ProjectsController(IProjectsRepository projectsRepository)
         {
-            _customProjectsRepository = customProjectsRepository;
+            _projectsRepository = projectsRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCustomByUserAsync(string userId)
         {
-            var projects = await _customProjectsRepository.LoadAllByUserIdAsync(userId);
-
+            var projects = (await _projectsRepository.LoadAllByUserIdAsync(userId))
+                .OrderBy(p => p.Name)
+                .Take(MaxCustomProjects)
+                .ToList();
+             
             return Ok(projects);
         }
     }
