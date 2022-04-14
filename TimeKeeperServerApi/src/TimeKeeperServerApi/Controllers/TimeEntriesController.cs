@@ -30,19 +30,9 @@ namespace TimeKeeperServerApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<TimeEntryDto>> GetAllByUserId(string userId)
         {
-            var entries = await _timeEntryRepository.LoadTimeEntiresAsync();
+            var entries = await _timeEntryRepository.LoadTimeEntriesAsync(userId);
 
             return entries.ToList();
-            // var result = new List<TimeEntryDto>{
-            //     new TimeEntryDto
-            //     {
-            //         TimeEntryId = "f43ceb8960cb4fb181dd5ce44d6ecf33",
-            //         UserId = "9b87607cb7134bc59cde9a96b16322a0",
-            //         ProjectId = "4f5f9b18b91b46e3aa590fa84f3fced6",
-                   
-            //     }
-            // };
-            // return result;
         }
 
         // GET api/timeentries/5

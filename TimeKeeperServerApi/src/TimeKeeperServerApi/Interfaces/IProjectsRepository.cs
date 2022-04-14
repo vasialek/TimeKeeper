@@ -4,8 +4,8 @@ using TimeKeeperServerApi.Models;
 
 namespace TimeKeeperServerApi.Interfaces
 {
-    public interface ICustomProjectsRepository
+    public interface IProjectsRepository
     {
-        Task<List<CustomTimeProject>> LoadAllByUserIdAsync(string userId);
+        Task<List<CustomProject>> LoadAllByUserIdAsync(string userId);
     }
 }

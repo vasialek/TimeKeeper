@@ -27,7 +27,7 @@ namespace TimeKeeperServerApi.Tests
             {
                 new TimeEntryDto { TimeEntryId = "TimeEntryId" }
             };
-            _repository.LoadTimeEntiresAsync().Returns(expected);
+            _repository.LoadTimeEntriesAsync(UserId).Returns(expected);
 
             var actual = await _controller.GetAllByUserId(UserId);
 
