@@ -13,16 +13,19 @@ using TimeKeeperServerApi.Entities;
 using Amazon.DynamoDBv2.DocumentModel;
 using TimeKeeperServerApi.Models;
 using TimeKeeperServerApi.Interfaces;
+using TimeKeeperServerApi.Services;
 
 namespace TimeKeeperServerApi.Controllers
 {
     [Route("api/[controller]")]
     public class TimeEntriesController : ControllerBase
     {
+        private readonly ITimeEntryValidationService _validationService;
         private readonly ITimeEntryRepository _timeEntryRepository;
 
-        public TimeEntriesController(ITimeEntryRepository timeEntryRepository)
+        public TimeEntriesController(ITimeEntryValidationService validationService, ITimeEntryRepository timeEntryRepository)
         {
+            _validationService = validationService;
             _timeEntryRepository = timeEntryRepository;
         }
 
@@ -58,6 +61,15 @@ namespace TimeKeeperServerApi.Controllers
 
             // LambdaLogger.Log($"TimeEntry {entry.TimeEntryId} is added");
             return entry;
+        }
+
+        // POST api/timeentires/update
+        [HttpPost]
+        [Route("Update")]
+        public async Task<TimeEntryDto> UpdateAsync(TimeEntryDto timeEntry)
+        {
+            await _validationService.ValidateUpdateAsync(timeEntry);
+            return await _timeEntryRepository.UpdateAsync(timeEntry);
         }
     }
 }

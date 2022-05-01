@@ -35,5 +35,12 @@ namespace TimeKeeperServerApi.Repositories
                 .Where(t => t.UserId == userId)
                 .ToList();
         }
+
+        public async Task<TimeEntryDto> UpdateAsync(TimeEntryDto timeEntry)
+        {
+            var exisiting = _timeEntries.First(t => t.TimeEntryId == timeEntry.TimeEntryId);
+
+            return exisiting;
+        }
     }
 }

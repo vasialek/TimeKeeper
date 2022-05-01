@@ -37,7 +37,7 @@ namespace TimeKeeperServerApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Can()
+        public async Task GetCustomByUserAsync_Limit_WhenTooManyCustomProjects()
         {
             _projectsRepository.LoadAllByUserIdAsync(UserId).Returns(new List<CustomProject>
             {

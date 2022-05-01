@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 
 using Amazon;
 using Amazon.DynamoDBv2;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace TimeKeeperServerApi
 {
@@ -27,8 +29,19 @@ namespace TimeKeeperServerApi
             services.AddControllers()
                     .AddNewtonsoftJson();
 
-            string region = Environment.GetEnvironmentVariable("AWS_REGION") ?? RegionEndpoint.USEast1.SystemName;
-            services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(RegionEndpoint.GetBySystemName(region)) );
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+                .AddCookie()
+                .AddOpenIdConnect(options =>
+                {
+                    
+                });
+            // string region = Environment.GetEnvironmentVariable("AWS_REGION") ?? RegionEndpoint.USEast1.SystemName;
+            // services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(RegionEndpoint.GetBySystemName(region)) );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

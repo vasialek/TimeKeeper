@@ -4,6 +4,6 @@ namespace TimeKeeperServerApi.Interfaces
     {
         string Encode(string input);
 
-        string Decode(string decoded);
+        string Decode(string encoded);
     }
 }
