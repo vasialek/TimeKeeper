@@ -50,17 +50,12 @@ namespace TimeKeeperServerApi.Controllers
 
         // POST api/timeentries
         [HttpPost]
-        public async Task<TimeEntryDto> Post([FromBody] TimeEntryDto entry)
+        [Route("Save")]
+        public async Task<TimeEntryDto> SaveAsync([FromBody] TimeEntryDto timeEntry)
         {
-            if (entry == null )
-            {
-                throw new ArgumentException($"Invalid input! {typeof(TimeEntryDto).Name} not informed");
-            }
+            await _validationService.ValidateSaveAsync(timeEntry);
 
-            entry.TimeEntryId = Guid.NewGuid().ToString("N");
-
-            // LambdaLogger.Log($"TimeEntry {entry.TimeEntryId} is added");
-            return entry;
+            return await _timeEntryRepository.SaveAsync(timeEntry);
         }
 
         // POST api/timeentires/update

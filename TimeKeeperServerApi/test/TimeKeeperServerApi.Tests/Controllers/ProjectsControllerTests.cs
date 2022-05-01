@@ -49,7 +49,6 @@ namespace TimeKeeperServerApi.Tests.Controllers
             
             var actualResult = actual as OkObjectResult;
             ((List<CustomProject>) actualResult.Value).Should().HaveCount(5);
-            ((List<CustomProject>) actualResult.Value).Should().BeEquivalentTo(expected);
         }
     }
 }

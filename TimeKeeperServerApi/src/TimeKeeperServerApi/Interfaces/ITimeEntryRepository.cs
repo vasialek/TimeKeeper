@@ -6,6 +6,8 @@ namespace TimeKeeperServerApi.Interfaces
 {
     public interface ITimeEntryRepository
     {
+        Task<TimeEntryDto> SaveAsync(TimeEntryDto timeEntry);
+        
         Task<IEnumerable<TimeEntryDto>> LoadTimeEntriesAsync(string userId);
 
         Task<TimeEntryDto> UpdateAsync(TimeEntryDto timeEntry);

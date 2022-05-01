@@ -9,6 +9,8 @@ namespace TimeKeeperServerApi.Repositories
 {
     public class TimeEntryRepository : ITimeEntryRepository
     {
+        private readonly IUniqueIdGenerator _uniqueIdGenerator;
+
         private static readonly List<TimeEntryDto> _timeEntries = new List<TimeEntryDto>
         {
             new TimeEntryDto
@@ -28,6 +30,20 @@ namespace TimeKeeperServerApi.Repositories
                 PriceMinor = 50
             },
         };
+
+        public TimeEntryRepository(IUniqueIdGenerator uniqueIdGenerator)
+        {
+            _uniqueIdGenerator = uniqueIdGenerator;
+        }
+
+        public async Task<TimeEntryDto> SaveAsync(TimeEntryDto timeEntry)
+        {
+            timeEntry.TimeEntryId = _uniqueIdGenerator.GetUid();
+            
+            _timeEntries.Add(timeEntry);
+
+            return timeEntry;
+        }
 
         public async Task<IEnumerable<TimeEntryDto>> LoadTimeEntriesAsync(string userId)
         {

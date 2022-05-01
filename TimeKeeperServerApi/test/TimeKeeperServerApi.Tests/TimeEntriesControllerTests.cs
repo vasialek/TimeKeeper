@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TimeKeeperServerApi.Controllers;
@@ -31,6 +32,25 @@ namespace TimeKeeperServerApi.Tests
                 UserId = "UserId",
                 ProjectId = "ProjectId"
             };
+        }
+
+        [Fact]
+        public async Task CanSaveAsync()
+        {
+            var expected = new TimeEntryDto();
+            _repository.SaveAsync(_timeEntry).Returns(expected);
+            
+            var actual = await _controller.SaveAsync(_timeEntry);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task SaveAsync_Throws_WhenInvalidTimeEntry()
+        {
+            _validationService.ValidateSaveAsync(_timeEntry).Throws(new InvalidObjectException("Fake exception"));
+
+            await Assert.ThrowsAsync<InvalidObjectException>(() => _controller.SaveAsync(_timeEntry));
         }
 
         [Fact]
