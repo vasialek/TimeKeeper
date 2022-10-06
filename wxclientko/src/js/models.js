@@ -3,12 +3,13 @@ function LoginModel(email, password) {
     self.email = email;
     self.password = password;
 }
-function UserData(userId, nick, email, jwt) {
+function UserData(userId, nick, email, expiredAt, jwt) {
     let self = this;
     self.userId = userId;
     self.jwt = jwt;
     self.nick = nick;
     self.email = email;
+    self.expiredAt = expiredAt;
     self.isLoggedIn = ko.computed(function() {
         return self.jwt != null && self.jwt.length > 32;
     });
@@ -51,6 +52,22 @@ function TimeEntry(timeEntry) {
     });
 }
 
+function Achievment(achievmentId, name, cssClass) {
+    let self = this;
+    self.achievmentId = achievmentId;
+    self.name = name;
+    self.cssClass = cssClass;
+}
+
+function AchievmentEntry(achievmentEntryId, achievmentId, userId, date, count) {
+    let self = this;
+    self.achievmentEntryId = achievmentEntryId;
+    self.achievmentId = achievmentId;
+    self.userId = userId;
+    self.date = date;
+    self.count = count;
+}
+
 function ProjectEntry(projectId, name, costPerHour, enabled = false) {
     let self = this;
     self.projectId = projectId;
@@ -63,18 +80,6 @@ function ProjectEntry(projectId, name, costPerHour, enabled = false) {
     self.costPerMinuteFmt = ko.computed(function() {
         return (self.costPerMinuteMinor() / 100).toFixed(2);
     });
-}
-
-class CustomProjectEntry {
-    constructor(projectId, name) {
-        let self = this;
-        self.projectId = projectId;
-        self.name = name;
-        self.customTimes = ko.computed(function() {
-            return [50, 75, 100, 150, 200];
-        });
-    }
-
 }
 
 function MinutesEntry(minutes) {
@@ -98,4 +103,9 @@ function FilterForTimes(projectName, projectId, isPaid) {
     self.doFiltering = ko.computed(function() {
         return self.projectName.length > 1 || self.isPaid != null;
     });
+}
+
+function TkSetting(isSavePassword) {
+    let self = this;
+    self.isSavePassword = isSavePassword;
 }

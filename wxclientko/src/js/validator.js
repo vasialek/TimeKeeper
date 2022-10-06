@@ -15,14 +15,14 @@ let TkValidator = {
         return errors;
     },
 
-    validateCustomEntry: function(entry) {
+    validateAchievmentEntry: function(entry) {
         let errors = [];
-
-        if (entry.projectId < 1) {
-            errors.push("You entry is not linked to any project.");
+        let count = parseInt(entry.count);
+        if (isNaN(count) || count < 1) {
+            errors.push("Provide number which is greater than 0.");
         }
-        if (entry.minutes < 1) {
-            errors.push("Please specify amount for entry.");
+        if (TkHelper.isValidUid(entry.achievmentId) == false) {
+            errors.push("Select any of achievments category.");
         }
 
         return errors;

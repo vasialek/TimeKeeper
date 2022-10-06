@@ -13,25 +13,23 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
     
-            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                <ul class="navbar-nav mr-3">
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showTimeEdit" class="nav-link" title="Log time"><i class="fas fa-plus"></i></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a data-bind="visible: userData().isLoggedIn(), click: showProjectsList" class="nav-link" title="Projects list"><i class="fas fa-tasks"></i></a data-bind="click: showProjectsList">
+                    </li>
                     <li class="nav-item dropdown">
                         <a data-bind="visible: userData().isLoggedIn(), click: toggleProjectDropdown" class="nav-link dropdown-toggle">Project</a>
                         <div data-bind="foreach: projects, class: projectDropdownClass" aria-labelledby="ProjectsDropdown">
                             <a data-bind="text: name, value: projectId, click: $root.goToProject" class="dropdown-item"></a>
                         </div>
                     </li>
-                    <li class="nav-item active">
-                        <a data-bind="visible: userData().isLoggedIn(), click: showTimeEdit" class="nav-link" title="Log time"><i class="fas fa-plus"></i></a>
-                    </li>
-                    <li class="nav-item active">
-                        <a data-bind="visible: userData().isLoggedIn(), click: showProjectsList" class="nav-link" title="Projects list"><i class="fas fa-tasks"></i></a>
-                    </li>
                 </ul>
-                <ul data-bind="foreach: customProjects, visible: userData().isLoggedIn()" class="navbar-nav mr-auto">
-                    <li class="nav-itme active">
-                        <a data-bind="click: $parent.showCustomProject, attr: {title: name}" class="text-primary cursor-pointer"><span data-bind="text: name"></span></a>
-                    </li>
+                <ul data-bind="foreach: achievments" class="navbar-nav">
+                    <li class="nav-item active mr-2"><i data-bind="click: $root.goToAchivements, attr: { title: name, class: cssClass }" class="text-warning"></i></li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
                     <a data-bind="text: userData().nick, attr: {title: userData().userId}" class="nav-link text-white">Aleksej V.</a>&nbsp;
@@ -58,7 +56,7 @@
             <div class="row col-4">
                 <form>
                     <div class="form-row mb-1">
-                        <input data-bind="value: loginModel().email" type="text" class="form-control form-control-sm" placeholder="Enter your e-mail" />
+                        <input data-bind="value: loginModel().email, hasFocus: !userData().isLoggedIn()" type="text" class="form-control form-control-sm" placeholder="Enter your e-mail" />
                     </div>
                     <div class="form-row mb-1">
                         <input data-bind="value: loginModel().password" type="password" class="form-control form-control-sm" placeholder="Enter your password" />
@@ -74,7 +72,6 @@
         <div data-bind="visible: userData().isLoggedIn()" class="container mt-6" style="max-width: 30em;">
             <!-- List of projects -->
             <div data-bind="visible: isProjectsListVisible">
-                <h3 data-bind="text: selectedProject().name"></h3>
                 <table class="table table-bordered table-hover table-sm">
                     <thead class="thead-light">
                         <tr>
@@ -106,54 +103,6 @@
                                     <input data-bind="checked: enabled, attr: { id: projectId }" type="checkbox" class="custom-control-input" />
                                     <label data-bind="attr: { for: projectId }" class="custom-control-label" for="switch1"></label>
                                   </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- List of custom project entries -->
-            <div data-bind="visible: selectedCustomProject().projectId != ''">
-                <h4>Custom <span data-bind="text: selectedCustomProject().name"></span></h4>
-                <table class="table table-bordered table-hover table-sm">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Count</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-bind="foreach: customEntries">
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <a data-bind="click: $parent.deleteTimeEntry" title="Delete custom entry"><i class="fas fa-trash small text-danger"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input data-bind="value: customEntryDate" placeholder="Data (yyyy-MM-dd)" />
-                            </td>
-                            <td colspan="2">
-                                <a data-bind="click: $root.saveCustomEdit" class="btn btn-success btn-sm"><i class="fas fa-check"></i></a>
-                                <a data-bind="click: $root.clearCustomEdit" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a>
-                            </td>
-                        </tr>
-                        <!-- Custom count -->
-                        <tr>
-                            <td colspan="3">
-                                <div class="form-row mb-3 justify-content-between">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text"><i class="fas fa-calculator"></i></div>
-                                        </div>
-                                        <input data-bind="value: customEntryCount" type="number" class="form-control form-contorl-sm" placeholder="Enter minutes">
-                                        <div class="input-group-append" data-bind="foreach: selectedCustomProject().customTimes()">
-                                            <div data-bind="text: $data, click: $root.setCustomCount" class="input-group-text cursor-pointer"><i></i></div>
-                                        </div>
-                                    </div>
-                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -220,6 +169,11 @@
                             </td>
                         </tr>
                     </tbody>
+                    <!-- <tfoot>
+                        <tr>
+                            <td data-bind="visible: unpaid() > 0" colspan="7" class="text-right"><span data-bind="text: unpaid()"></span></td>
+                        </tr>
+                    </tfoot> -->
                 </table>
             </div>
 
@@ -251,7 +205,7 @@
                         <input data-bind="value: timeToEdit().date" class="form-control" placeholder="Date" />
                     </div>
                     <div class="form-row mb-3">
-                        <label for="TimeProjectId">Project to log time <span data-bind="text: timeToEdit().costPerMinuteFmt"></span> </label>
+                        <label for="TimeProjectId">Project to log time (<span data-bind="text: timeToEdit().costPerMinuteFmt"></span>&euro; / min.) </label>
                         <select data-bind="options: projects, 
                                         optionsText: 'name',
                                         value: timeToEdit().project" id="TimeProjectId" class="form-control"></select>
@@ -263,7 +217,7 @@
                             </div>
                             <input data-bind="value: timeToEdit().minutes" id="TimeMinutes" type="number" class="form-control form-contorl-sm" placeholder="Enter minutes">
                             <div class="input-group-append" data-bind="foreach: timeButtons">
-                                <div data-bind="text: minutesFmt, click: $root.setMinutes" class="input-group-text"><i>15</i></div>
+                                <div data-bind="text: minutesFmt, click: $root.setMinutes" class="input-group-text" style="cursor: pointer;"><i>15</i></div>
                             </div>
                         </div>
                     </div>
@@ -278,15 +232,56 @@
                     </div>
                 </form>
             </div>
-        </div data-bind="visible: !userData().isLoggedIn()">
+
+            <!-- List of achievments entries -->
+            <div data-bind="visible: isAchievmentEntriesVisible">
+                <div data-bind="visible: selectedAchievment().achievmentId !== ''">
+                    <i data-bind="attr: {class: selectedAchievment().cssClass}"> <span data-bind="text: selectedAchievment().name" class="text-body mx-1"></span></i>
+                </div>
+                <table class="table table-bordered table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th></th>
+                            <th>Date</th>
+                            <th>Count</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: achievmentEntries">
+                        <tr>
+                            <td><i data-bind="attr: {class: $root.selectedAchievmentCssClass}"></i></td>
+                            <td data-bind="text: date"></td>
+                            <td data-bind="text: count"></td>
+                            <td>
+                                <button data-bind="click: $parent.onAchievmentEntryDeleteClicked" class="btn btn-sm btn-danger fas fa-trash"></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><i data-bind="attr: {class: selectedAchievment().cssClass}"></i></td>
+                            <td><input data-bind="value: achievmentEtryToEdit().date" type="text" class="form-control form-control-sm" /></td>
+                            <td><input data-bind="value: achievmentEtryToEdit().count" type="number" class="form-control form-control-sm" /></td>
+                            <td><button data-bind="click: onAchievmentEntryAddClicked" class="btn btn-sm btn-success">Add</button></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div data-bind="visible: isLoading">
+            <img src="public/ajax-loading.gif" width="16" height="16" title="Loading...." />
+        </div>
 
     </body>
 
     <script src="./js/knockout-3.5.1.js"></script>
     <script src="./js/models.js"></script>
+    <script src="./js/timer.js"></script>
     <script src="./js/helpers.js"></script>
     <script src="./js/validator.js"></script>
-    <!-- <script src="./js/repository.js"></script> -->
-    <script src="./js/mockRepository.js"></script>
+    <script src="./js/localStorage.js"></script>
+    <script src="./js/repository.js"></script>
+    <!-- <script src="./js/mockRepository.js"></script> -->
     <script src="./js/app.js"></script>
 </html>
