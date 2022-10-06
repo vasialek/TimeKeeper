@@ -2,37 +2,41 @@ function TimeKeeperViewModel() {
     // Data
     let self = this;
     self.isProjectsListVisible = ko.observable(false);
-    self.isTimesListVisible = ko.observable(true);
+    self.isTimesListVisible = ko.observable(false);
     self.isTimeEditVisible = ko.observable(false);
     self.isProjectEditVisible = ko.observable(false);
     self.isProjectsDropdownVisible = ko.observable(false);
+    self.isAchievmentEntriesVisible = ko.observable(true);
 
-    self.userData = ko.observable(new UserData("02dc14f9b2d6480981f08a7953c3ae3a", "Test user", "fake@email.zzz", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgdXNlciIsImlhdCI6MTUxNjIzOTAyMiwidWlkIjoiMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMiJ9.tUFNdahdZXrWUYfKyBCGjI9EqUUvxpJZj5Hqd2c4omo"));
+    self.isLoading = ko.observable(false);
+    self.settings = new TkSetting(false);
+    self.userData = ko.observable(new UserData("", "", "", 0, ""));
     self.loginModel = ko.observable(new LoginModel("", ""));
 
     self.errorMessage = ko.observable(new ErrorMessage("", []));
 
     self.projects = ko.observableArray([]);
-    self.customProjects = ko.observableArray([]);
 
     self.timeButtons = [
         new MinutesEntry(15), new MinutesEntry(30), new MinutesEntry(45), 
         new MinutesEntry(60), new MinutesEntry(90), new MinutesEntry(120), 
     ];
-    // Custom project display/edit
-    self.selectedCustomProject = ko.observable(new CustomProjectEntry("", "G19"));
-    self.customEntries = ko.observableArray([]);
-    self.customTimes = ko.observableArray([]);
-    self.customEntryDate = ko.observable(TkHelper.getCurrentDate());
-    self.customEntryCount = ko.observable(0);
-    
     self.selectedProject = ko.observable(new ProjectEntry("", "", 0));
     self.times = ko.observableArray([]);
     self.timeToEdit = ko.observable(new TimeEntryEditable(null, TkHelper.getCurrentDate(), 0));
     self.projectToEdit = ko.observable(new ProjectEntry("", "", 0));
 
+    // custom achievments
+    self.selectedAchievment = ko.observable(new Achievment("", "", ""));
+    self.achievments = ko.observableArray([]);
+    self.achievmentEtryToEdit = ko.observable(new AchievmentEntry("", "", "", TkHelper.getCurrentDate(), 0));
+    self.achievmentEntries = ko.observableArray([]);
+
     // Filter for time entries
     self.filterForTimes = ko.observable(new FilterForTimes("", "", null));
+
+    // unpaid for times
+    self.unpaid = ko.observable(0);
 
     // Events on Times/Projects length modified
     // self.projects.subscribe(function(e) {
@@ -54,17 +58,47 @@ function TimeKeeperViewModel() {
 
     self.init = function() {
         console.log("Doing initialization work...");
+        self.userData(TkLocaStorage.loadUserData());
+        console.log("Loaded user:");
+        console.log(self.userData());
+        if (self.userData().isLoggedIn()) {
+            self.loadTimeEntries();
+            self.loadProjects();
+            self.loadAchievments();
+            self.isTimesListVisible(true);
+            TkTimer.startJwtRefresh(function() {
+                console.log("...");
+                Repository.refreshJwt(self.userData(), function() {
+                    console.log("done");
+                }, function() {
+                    console.log("error, stopping JWT refresh...");
+                    TkTimer.stopJwtRefresh();
+                });
+            }, 10);
+        } else {
+            console.log(TkLocaStorage.loadLoginData());
+            self.loginModel(TkLocaStorage.loadLoginData());
+        }
+    };
+
+    self.loadTimeEntriesForProject = function(project) {
         self.loadTimeEntries();
-        self.loadProjects();
+        self.filterForTimes(new FilterForTimes(project.name(), project.projectId, null));
+        self.applyFilterForTimes(self.filterForTimes());
     };
 
     self.loadTimeEntries = function() {
         Repository.loadTimeEntries(self.userData(), function(entries) {
             console.log(entries);
+            let unpaid = 0;
             self.times.removeAll();
             for (let i = 0; i < entries.length; i++) {
                 self.times.push(new TimeEntry(entries[i]));
+                if (entries[i].isPaid === false) {
+                    unpaid += entries[i].priceMinor;
+                }
             }
+            self.unpaid(unpaid / 100);
         }, function(errors) {
             self.showErrorMessage("Error loading time entries", errors, 20);
         });
@@ -79,17 +113,18 @@ function TimeKeeperViewModel() {
         }, function(errors) {
             self.showErrorMessage("Error loading projects", errors, 20);
         });
+    };
 
-        Repository.loadCustomProjects(self.userData(), function(customProjects) {
-            console.table(customProjects);
-            self.customProjects.removeAll();
-            customProjects.forEach(p => {
-                const customProject = new CustomProjectEntry(p.projectId, p.name);
-                self.customProjects.push(customProject)
-            });
+    self.loadAchievments = function(achievment) {
+        Repository.loadAchievments(self.userData(), function(achievments) {
+            console.log(achievments);
+            self.achievments.removeAll();
+            for (let i = 0; i < achievments.length; i++) {
+                self.achievments.push(new Achievment(achievments[i].achievmentId, achievments[i].name, achievments[i].cssClass));
+            }
         }, function(errors) {
-            self.showErrorMessage("Error loading custome projects", errors, 20);
-        })
+            self.showErrorMessage("Error loading achievments", errors, 20);
+        });
     };
 
     self.filterByProject = function(timeEntry) {
@@ -156,18 +191,26 @@ function TimeKeeperViewModel() {
 
     self.goToProject = function(project) {
         self.selectedProject(project);
-        self.isProjectsDropdownVisible(false);
-        self.isTimeEditVisible(false);
+        console.log(project);
+        self.hideAllForms();
+        self.loadTimeEntriesForProject(project);
         self.isTimesListVisible(true);
+    };
+
+    self.goToAchivements = function(achievment) {
+        console.log("Showing list of achivements for:");
+        console.log(achievment);
+        self.hideAllForms();
+        self.selectedAchievment(achievment);
+    };
+
+    self.selectedAchievmentCssClass = function() {
+        return "fas fa-cross";
     };
 
     self.setMinutes = function(button) {
         self.timeToEdit().minutes(button.minutes);
     };
-
-    self.setCustomCount = function(count) {
-        self.customEntryCount(count);
-    }
 
     self.showTimeEdit = function() {
         self.isTimeEditVisible(true);
@@ -178,27 +221,41 @@ function TimeKeeperViewModel() {
     };
 
     self.showProjectsList = function() {
+        self.hideAllForms();
         self.isProjectsListVisible(true);
     };
 
-    self.showCustomProject = function(customProject) {
-        console.log("Showing custom project:");
-        console.log(customProject);
-        self.selectedCustomProject(customProject);
+    self.hideAllForms = function() {
+        self.isTimesListVisible(false);
+        self.isProjectsListVisible(false);
+        self.isTimeEditVisible(false);
+        self.isProjectsDropdownVisible(false);
     };
 
     self.logout = function () {
-        self.userData(new UserData("", "", "", ""));
+        self.userData(new UserData("", "", "", 0, ""));
+        TkLocaStorage.saveUserData(self.userData());
     };
 
     self.login = function () {
         let login = self.loginModel();
+        self.clearErrorMessage();
         Repository.login({
             clientId: "FakeClientId",
             email: login.email,
             password: login.password
-        }, function(user) {
-            self.userData(new UserData(user.userId, user.nick, user.email, user.jwt));
+        }, function(jwt) {
+            console.log("User logged in OK. JWT: " + jwt);
+            let payload = TkHelper.parseJwt(jwt);
+            console.log(payload);
+
+            self.userData(new UserData(payload.uid, payload.nick, payload.email, payload.exp * 1000, jwt));
+            TkLocaStorage.saveUserData(self.userData());
+            TkLocaStorage.saveLoginData({
+                email: login.email,
+                password: self.settings.isSavePassword ? login.password : "",
+            });
+            self.init();
         }, function(errors) {
             self.showErrorMessage("Can't log you in", errors, 20);
         });
@@ -231,18 +288,6 @@ function TimeKeeperViewModel() {
 
     self.cancelCreateTime = function() {
         self.isTimeEditVisible(false);
-    };
-
-    self.saveCustomEdit = function() {
-        console.log("Saving entry for custom project:");
-        console.log(self.selectedCustomProject());
-        
-    };
-
-    self.clearCustomEdit = function() {
-        self.customEntryCount(0);
-        self.customEntryDate(TkHelper.getCurrentDate());
-        self.selectedCustomProject(new CustomProjectEntry("", ""));
     };
 
     self.deleteTimeEntry = function(timeEntry) {
@@ -283,6 +328,32 @@ function TimeKeeperViewModel() {
         self.projects.push(self.projectToEdit());
         self.projectToEdit(new ProjectEntry("", "", 0));
         self.isProjectEditVisible(false);
+    };
+
+    self.onAchievmentEntryAddClicked = function() {
+        console.log("Adding achievments entry:");
+        self.achievmentEtryToEdit().achievmentId = self.selectedAchievment().achievmentId;
+        self.achievmentEtryToEdit().userId = self.userData().userId;
+        console.log(self.achievmentEtryToEdit());
+
+        Repository.createAchievmentEntry(self.userData(), self.achievmentEtryToEdit(), function(entry) {
+            self.achievmentEntries.push(entry);
+            self.achievmentEtryToEdit(new AchievmentEntry("", "", "", TkHelper.getCurrentDate(), 0));
+        }, function(errors) {
+            self.showErrorMessage("Error creating achievment entry", errors, 30);
+        });
+    };
+
+    self.onAchievmentEntryDeleteClicked = function(achievmentEntry) {
+        console.log("Going to delete:");
+        console.log(achievmentEntry);
+
+        Repository.deleteAchievmentEntry(self.userData(), achievmentEntry, function() {
+            console.log("Deleted");
+            self.achievmentEntries.remove(achievmentEntry);
+        }, function(errors) {
+            self.showErrorMessage("Can't delete achievment entry", errors, 30);
+        });
     };
 
     self.showErrorMessage = function(msg, errors, timeoutS) {

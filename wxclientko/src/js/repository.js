@@ -1,6 +1,28 @@
 let Repository = {
     _baseUrl: "http://localhost:28079/api/v1/",
 
+    login: function (credentials, callback, errorCallback) {
+        let errors = TkValidator.validateLogin(credentials);
+        if (errors.length > 0) {
+            errorCallback(errors);
+            return;
+        }
+
+        let self = this;
+        self._doPost(self._baseUrl + "auth", JSON.stringify(credentials), function(json) {
+            console.log(json)
+            let response = JSON.parse(json);
+            if (response.status == true) {
+                callback(response.jwt);
+            } else {
+                errorCallback(["Incorrect email/password."]);
+            }
+        }, function(xhr) {
+            console.log("Error logging into system");
+            errorCallback(["Error communicating with remote server."]);
+        });
+    },
+
     loadProjects: function(user, callback, errorCallback) {
         if (TkHelper.isValidJwt(user.jwt) == false) {
             errorCallback(["You are not logged in. Please re-login."]);
@@ -39,7 +61,6 @@ let Repository = {
             "minutes": 25
           };
 
-          // self._doPost(self._baseUrl + "times/1234/", JSON.stringify(model), function(json) {
         self._doPost(self._baseUrl + "times", JSON.stringify(timeEntry), function(json) {
           console.log("Time entry was created on server.");
             let response = JSON.parse(json);
@@ -144,15 +165,17 @@ let Repository = {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
-        // xhr.setRequestHeader("Accept", "*/*");
-        // xhr.setRequestHeader("Sec-Fetch-Dest", "object");
-        // xhr.setRequestHeader("Content-Length", data.length);
 
         xhr.onload = function() {
-            callback(xhr.responseText);
+            console.log("Got response on POST from server: " + xhr.status + " (" + xhr.statusText + ")");
+            if (xhr.status >= 200 && xhr.status < 300) {
+                callback(xhr.responseText);
+            } else {
+                errorCallback(xhr);
+            }
         };
         xhr.onerror = function() {
-            console.log("Error POSTing request to " + url + "." + xhr.status + " " + xhr.statusText);
+            console.log("Error POSTing request to " + url + ". " + xhr.status + " " + xhr.statusText);
             errorCallback(xhr);
         };
         xhr.send(data);

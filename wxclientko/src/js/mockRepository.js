@@ -4,7 +4,7 @@ let Repository = {
             timeEntryId: "768651c68ac6497f918b51e7477c7872",
             userId: "1234567890123456789012",
             isPaid: true,
-            projectId: "646d935e655a46b89ae3934ec79a67d7",
+            projectId: "f8bebe7a7ff14d15811b489ebc4cf97b",
             projectName: "Vida",
             date: "2020-02-07",
             minutes: 30,
@@ -15,7 +15,7 @@ let Repository = {
             timeEntryId: "53373753d70d4645890f7f61093bf948",
             userId: "1234567890123456789012",
             isPaid: false,
-            projectId: "9a3d967b2eb74eff9c631bb341db6a82",
+            projectId: "50d8e67673a84d17964ee0834fb72fc9",
             projectName: "SSI",
             date: "2020-02-05",
             minutes: 15,
@@ -26,7 +26,7 @@ let Repository = {
             timeEntryId: "53373753d70d4645890f7f61093bf456",
             userId: "OtherUserId__db6a82",
             isPaid: false,
-            projectId: "9a3d967b2eb74eff9c631bb341db6a82",
+            projectId: "50d8e67673a84d17964ee0834fb72fc9",
             projectName: "SSI",
             date: "2020-02-13",
             minutes: 15,
@@ -36,22 +36,23 @@ let Repository = {
     ],
     _projects: [
         {
-            projectId: "ba14259570aa4226871b855c39d884d8", 
+            projectId: "f8bebe7a7ff14d15811b489ebc4cf97b", 
             name: "Vida", 
             costPerHourMinor: 2000, 
             isEnabled: true
         },
         {
-            projectId: "9a3d967b2eb74eff9c631bb341db6a82", 
+            projectId: "50d8e67673a84d17964ee0834fb72fc9", 
             name: "SSI", 
             costPerHourMinor: 1000, 
             isEnabled: true
         },
     ],
-
-    _customProjects: [
-        new CustomProjectEntry("a84c967b2eb74eff9c631bb341db83d1", "G19")
+    _achievments: [
+        new Achievment("74e1d19ad0c144de90c423ece65b4a72", "FAKE achievment 1", "fas fa-crosshairs text-warning"),
+        new Achievment("fcda469f74c0425bb0f23e13b7bcd92f", "FAKE achievment 2", "fas fa-chess-knight text-warning")
     ],
+    _achievmentEntries: [],
 
     login: function (credentials, callback, errorCallback) {
         let errors = TkValidator.validateLogin(credentials);
@@ -68,19 +69,13 @@ let Repository = {
         });
     },
 
-    createCustomEntry: function(user, entry, callbak, errorCallback) {
+    refreshJwt: function(user, callback, errorCallback) {
         if (TkHelper.isValidJwt(user.jwt) == false) {
             errorCallback(["You are not logged in. Please re-login."]);
             return;
         }
-
-        let errors = TkValidator.validateTimeEntry(timeEntry);
-        if (errors.length > 0) {
-            errorCallback(errors);
-            return;
-        }
-
-        callbak(entry);
+        
+        callback();
     },
 
     createTimeEntry: function(user, timeEntry, callback, errorCallback) {
@@ -151,12 +146,39 @@ let Repository = {
         callback(this._projects);
     },
 
-    loadCustomProjects: function(user, callback, errorCallback) {
+    createAchievmentEntry: function(user, achievmentEntry, callback, errorCallback) {
         if (TkHelper.isValidJwt(user.jwt) == false) {
             errorCallback(["You are not logged in. Please re-login."]);
             return;
         }
 
-        callback(this._customProjects);
+        let errors = TkValidator.validateAchievmentEntry(achievmentEntry);
+        if (errors.length > 0) {
+            errorCallback(errors);
+            return;
+        }
+
+        achievmentEntry.achievmentEntryId = "c96e955b2b3347209b27a773c8b7458" + (this._achievmentEntries.length + 1).toString();
+        this._achievmentEntries.push(achievmentEntry);
+
+        callback(achievmentEntry);
+    },
+
+    deleteAchievmentEntry: function(user, achievmentEntry, callback, errorCallback) {
+        let errors = TkValidator.ensureCouldModify(user.jwt, achievmentEntry.userId, "You can't delete other user Time entry.");
+        if (errors.length > 0) {
+            errorCallback(errors);
+            return;
+        }
+
+        callback();
+    },
+
+    loadAchievments: function(user, callback, errorCallback) {
+        if (TkHelper.isValidJwt(user.jwt) == false) {
+            errorCallback(["You are not logged in. Please re-login."]);
+            return;
+        }
+        callback(this._achievments);
     }
 };
