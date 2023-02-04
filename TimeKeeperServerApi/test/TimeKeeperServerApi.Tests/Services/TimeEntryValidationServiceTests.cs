@@ -15,16 +15,16 @@ namespace TimeKeeperServerApi.Tests.Services
         private const string ProjectId = "ProjectId";
         private readonly TimeEntryValidationService _validationService;
         private readonly TimeEntryDto _timeEntry;
-        private readonly IUniqueIdGenerator _uniqueIdGenerator = Substitute.For<IUniqueIdGenerator>();
+        private readonly IUniqueIdBuilder _uniqueIdBuilder = Substitute.For<IUniqueIdBuilder>();
 
         public TimeEntryValidationServiceTests()
         {
-            _validationService = new TimeEntryValidationService(_uniqueIdGenerator);
+            _validationService = new TimeEntryValidationService(_uniqueIdBuilder);
             _timeEntry = new TimeEntryDto
             {
                 ProjectId = ProjectId 
             };
-            _uniqueIdGenerator.IsValidUid(ProjectId).Returns(true);
+            _uniqueIdBuilder.IsValidUid(ProjectId).Returns(true);
         }
 
         [Fact]

@@ -1,6 +1,6 @@
 namespace TimeKeeperServerApi.Interfaces
 {
-    public interface IUniqueIdGenerator
+    public interface IUniqueIdBuilder
     {
         string GetUid();
 

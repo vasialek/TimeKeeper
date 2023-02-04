@@ -17,7 +17,7 @@ namespace TimeKeeperServerApi.Controllers
             _projectsRepository = projectsRepository;
         }
 
-        [HttpGet]
+        [HttpGet("getcustomebyuser")]
         public async Task<IActionResult> GetCustomByUserAsync(string userId)
         {
             var projects = (await _projectsRepository.LoadAllByUserIdAsync(userId))

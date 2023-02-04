@@ -1,17 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TimeKeeperServerApi.Controllers;
-using Xunit;
+using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using TimeKeeperServerApi.Controllers;
+using TimeKeeperServerApi.Exceptions;
 using TimeKeeperServerApi.Interfaces;
 using TimeKeeperServerApi.Models;
-using FluentAssertions;
-using NSubstitute.ExceptionExtensions;
-using TimeKeeperServerApi.Exceptions;
-using TimeKeeperServerApi.Services;
+using Xunit;
 
-namespace TimeKeeperServerApi.Tests
+namespace TimeKeeperServerApi.Tests.Controllers
 {
     public class TimeEntriesControllerTests
     {

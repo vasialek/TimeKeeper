@@ -9,7 +9,7 @@ namespace TimeKeeperServerApi.Repositories
 {
     public class TimeEntryRepository : ITimeEntryRepository
     {
-        private readonly IUniqueIdGenerator _uniqueIdGenerator;
+        private readonly IUniqueIdBuilder _uniqueIdBuilder;
 
         private static readonly List<TimeEntryDto> _timeEntries = new List<TimeEntryDto>
         {
@@ -31,14 +31,14 @@ namespace TimeKeeperServerApi.Repositories
             },
         };
 
-        public TimeEntryRepository(IUniqueIdGenerator uniqueIdGenerator)
+        public TimeEntryRepository(IUniqueIdBuilder uniqueIdBuilder)
         {
-            _uniqueIdGenerator = uniqueIdGenerator;
+            _uniqueIdBuilder = uniqueIdBuilder;
         }
 
         public async Task<TimeEntryDto> SaveAsync(TimeEntryDto timeEntry)
         {
-            timeEntry.TimeEntryId = _uniqueIdGenerator.GetUid();
+            timeEntry.TimeEntryId = _uniqueIdBuilder.GetUid();
             
             _timeEntries.Add(timeEntry);
 

@@ -9,11 +9,11 @@ namespace TimeKeeperServerApi.Services
 {
     public class TimeEntryValidationService : ITimeEntryValidationService
     {
-        private readonly IUniqueIdGenerator _uniqueIdGenerator;
+        private readonly IUniqueIdBuilder _uniqueIdBuilder;
 
-        public TimeEntryValidationService(IUniqueIdGenerator uniqueIdGenerator)
+        public TimeEntryValidationService(IUniqueIdBuilder uniqueIdBuilder)
         {
-            _uniqueIdGenerator = uniqueIdGenerator;
+            _uniqueIdBuilder = uniqueIdBuilder;
         }
 
 
@@ -21,7 +21,7 @@ namespace TimeKeeperServerApi.Services
         {
             var errors = new List<string>();
 
-            if (_uniqueIdGenerator.IsValidUid(timeEntry.ProjectId) == false)
+            if (_uniqueIdBuilder.IsValidUid(timeEntry.ProjectId) == false)
             {
                 errors.Add("Project is not specified, please choose any.");
             }

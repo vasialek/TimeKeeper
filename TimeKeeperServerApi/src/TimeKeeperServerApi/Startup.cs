@@ -11,6 +11,10 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using TimeKeeperServerApi.Builders;
+using TimeKeeperServerApi.Interfaces;
+using TimeKeeperServerApi.Repositories;
+using TimeKeeperServerApi.Services;
 
 namespace TimeKeeperServerApi
 {
@@ -42,6 +46,10 @@ namespace TimeKeeperServerApi
                 });
             // string region = Environment.GetEnvironmentVariable("AWS_REGION") ?? RegionEndpoint.USEast1.SystemName;
             // services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(RegionEndpoint.GetBySystemName(region)) );
+
+            services.AddSingleton<ITimeEntryValidationService, TimeEntryValidationService>();
+            services.AddSingleton<IUniqueIdBuilder, UniqueIdBuilder>();
+            services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -52,11 +60,11 @@ namespace TimeKeeperServerApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

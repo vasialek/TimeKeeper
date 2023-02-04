@@ -15,13 +15,13 @@ namespace TimeKeeperServerApi.Tests.Repositories
         private const string TimeEntryId = "TimeEntryId";
         private const string UserId = "UserId";
         private readonly TimeEntryRepository _repository;
-        private readonly IUniqueIdGenerator _uniqueIdGenerator = Substitute.For<IUniqueIdGenerator>();
+        private readonly IUniqueIdBuilder _uniqueIdBuilder = Substitute.For<IUniqueIdBuilder>();
 
         public TimeEntryRepositoryTests()
         {
-            _uniqueIdGenerator.GetUid().Returns(TimeEntryId);
+            _uniqueIdBuilder.GetUid().Returns(TimeEntryId);
             
-            _repository = new TimeEntryRepository(_uniqueIdGenerator);
+            _repository = new TimeEntryRepository(_uniqueIdBuilder);
         }
 
         [Fact]
