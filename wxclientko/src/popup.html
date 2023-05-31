@@ -264,6 +264,12 @@
                             <td><input data-bind="value: achievmentEtryToEdit().count" type="number" class="form-control form-control-sm" /></td>
                             <td><button data-bind="click: onAchievmentEntryAddClicked" class="btn btn-sm btn-success">Add</button></td>
                         </tr>
+                        <tr data-bind="visible: achievmentEntries().length > 0">
+                            <td colspan="4" class="text-center small">
+                                <span data-bind="text: getAchievmentsMinDate()"></span> - 
+                                <span data-bind="text: getAchievmentsMaxDate()"></span>:
+                                <span data-bind="text: getAchievmentsCount()" class="font-weight-bolder"></span></td>
+                        </tr>
                     </tfoot>
                 </table>
             </div>
@@ -281,7 +287,7 @@
     <script src="./js/helpers.js"></script>
     <script src="./js/validator.js"></script>
     <script src="./js/localStorage.js"></script>
-    <script src="./js/repository.js"></script>
-    <!-- <script src="./js/mockRepository.js"></script> -->
+    <!-- <script src="./js/repository.js"></script> -->
+    <script src="./js/mockRepository.js"></script>
     <script src="./js/app.js"></script>
 </html>

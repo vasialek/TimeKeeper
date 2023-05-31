@@ -6,7 +6,7 @@ function TimeKeeperViewModel() {
     self.isTimeEditVisible = ko.observable(false);
     self.isProjectEditVisible = ko.observable(false);
     self.isProjectsDropdownVisible = ko.observable(false);
-    self.isAchievmentEntriesVisible = ko.observable(true);
+    self.isAchievmentEntriesVisible = ko.observable(false);
 
     self.isLoading = ko.observable(false);
     self.settings = new TkSetting(false);
@@ -67,14 +67,13 @@ function TimeKeeperViewModel() {
             self.loadAchievments();
             self.isTimesListVisible(true);
             TkTimer.startJwtRefresh(function() {
-                console.log("...");
                 Repository.refreshJwt(self.userData(), function() {
-                    console.log("done");
+                    console.log("JWT is refreshed");
                 }, function() {
                     console.log("error, stopping JWT refresh...");
                     TkTimer.stopJwtRefresh();
                 });
-            }, 10);
+            }, 120);
         } else {
             console.log(TkLocaStorage.loadLoginData());
             self.loginModel(TkLocaStorage.loadLoginData());
@@ -202,10 +201,11 @@ function TimeKeeperViewModel() {
         console.log(achievment);
         self.hideAllForms();
         self.selectedAchievment(achievment);
+        self.isAchievmentEntriesVisible(true);
     };
 
     self.selectedAchievmentCssClass = function() {
-        return "fas fa-cross";
+        return self.selectedAchievment.cssClass;
     };
 
     self.setMinutes = function(button) {
@@ -244,12 +244,12 @@ function TimeKeeperViewModel() {
             clientId: "FakeClientId",
             email: login.email,
             password: login.password
-        }, function(jwt) {
-            console.log("User logged in OK. JWT: " + jwt);
-            let payload = TkHelper.parseJwt(jwt);
+        }, function(user) {
+            console.log("User logged in OK. JWT: " + user);
+            let payload = TkHelper.parseJwt(user.jwt);
             console.log(payload);
 
-            self.userData(new UserData(payload.uid, payload.nick, payload.email, payload.exp * 1000, jwt));
+            self.userData(new UserData(payload.uid, payload.nick, payload.email, payload.exp * 1000, user.jwt));
             TkLocaStorage.saveUserData(self.userData());
             TkLocaStorage.saveLoginData({
                 email: login.email,
@@ -354,6 +354,37 @@ function TimeKeeperViewModel() {
         }, function(errors) {
             self.showErrorMessage("Can't delete achievment entry", errors, 30);
         });
+    };
+
+    self.getAchievmentsMinDate = function() {
+        const achievments = self.achievmentEntries();
+        let min = "9999-99-99";
+        for (let i = 0; i < achievments.length; i++) {
+            if (achievments[i].date < min) {
+                min = achievments[i].date;
+            }
+        }
+        return min;
+    };
+
+    self.getAchievmentsMaxDate = function() {
+        const achievments = self.achievmentEntries();
+        let max = "0000-00-00";
+        for (let i = 0; i < achievments.length; i++) {
+            if (achievments[i].date > max) {
+                max = achievments[i].date;
+            }
+        }
+        return max;
+    };
+
+    self.getAchievmentsCount = function() {
+        const achievments = self.achievmentEntries();
+        let count = 0;
+        for (let i = 0; i < achievments.length; i++) {
+            count += parseInt(achievments[i].count);
+        }
+        return count;
     };
 
     self.showErrorMessage = function(msg, errors, timeoutS) {

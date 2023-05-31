@@ -4,7 +4,6 @@ let TkHelper = {
             return false;
         }
         let dotCount = (jwt.match(/\./g) || []).length;
-        console.log("Dots in JWT: " + dotCount);
         return dotCount == 2;
     },
 
@@ -29,16 +28,18 @@ let TkHelper = {
     },    
 
     calculateCost: function(minutes, costPerHourMinor) {
-        console.log("Calculating cost for minutes: " + minutes + ", costPerHour (minor): " + costPerHourMinor);
         return Math.round(costPerHourMinor * minutes / 60);
     },
 
     getCurrentDate: function() {
         let dt = new Date();
-        let month = dt.getMonth() + 1;
-        month = month > 9 ? month : "0" + month;
-        let day = dt.getDay() > 9 ? dt.getDay() : "0" + dt.getDay();
+        let month = this.formatTwoDigits(dt.getMonth() + 1);
+        let day = this.formatTwoDigits(dt.getDate());
     
-        return dt.getFullYear() + "-" + month + "-" + day;
+        return `${dt.getFullYear()}-${month}-${day}`;
+    },
+
+    formatTwoDigits: function(value) {
+        return value > 9 ? value : "0" + value;
     }
 }
