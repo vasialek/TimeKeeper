@@ -135,6 +135,26 @@ let Repository = {
         });
     },
 
+    loadProjects: function(user, callback, errorCallback) {
+        errorCallback(["loadProjects is not implemented."]);
+    },
+
+    createAchievmentEntry: function(user, achievmentEntry, callback, errorCallback) {
+        errorCallback(["createAchievmentEntry is not implemented."]);
+    },
+
+    deleteAchievmentEntry: function(user, achievmentEntry, callback, errorCallback) {
+        errorCallback(["deleteAchievmentEntry is not implemented."]);
+    },
+
+    loadAchievments: function(user, callback, errorCallback) {
+        errorCallback(["loadAchievments is not implemented."]);
+    },
+
+    loadAchievmentEntries: function(user, achievmentId, callback, errorCallback) {
+        errorCallback(["loadAchievmentEntries is not implemented."]);
+    },
+
     _doGet(url, callback, errorCallback) {
         this._doRequest(url, "GET", callback, errorCallback);
     },

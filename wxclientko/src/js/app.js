@@ -126,6 +126,19 @@ function TimeKeeperViewModel() {
         });
     };
 
+    self.loadAchievmentEntries = function(achievment) {
+        Repository.loadAchievmentEntries(self.userData(), achievment.achievmentId, function(entries) {
+            console.log("Got achievment entries:");
+            console.log(entries);
+            self.achievmentEntries.removeAll();
+            for (let i = 0; i < entries.length; i++) {
+                self.achievmentEntries.push(new AchievmentEntry(entries[i].achievmentEntryId, entries[i].achievmentId, entries[i].userId, entries[i].date, entries[i].count));
+            }
+        }, function(errors) {
+            self.showErrorMessage(`Error loading achievment entries for ${achievment.name}`, errors, 20);
+        });
+    };
+
     self.filterByProject = function(timeEntry) {
         console.log(timeEntry);
         console.log("Going to filter by project: " + timeEntry.projectId);
@@ -201,6 +214,7 @@ function TimeKeeperViewModel() {
         console.log(achievment);
         self.hideAllForms();
         self.selectedAchievment(achievment);
+        self.loadAchievmentEntries(achievment);
         self.isAchievmentEntriesVisible(true);
     };
 
