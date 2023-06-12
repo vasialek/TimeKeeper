@@ -52,7 +52,11 @@ let Repository = {
         new Achievment("74e1d19ad0c144de90c423ece65b4a72", "FAKE achievment 1", "fas fa-crosshairs text-warning"),
         new Achievment("fcda469f74c0425bb0f23e13b7bcd92f", "FAKE achievment 2", "fas fa-chess-knight text-warning")
     ],
-    _achievmentEntries: [],
+    _achievmentEntries: [
+        new AchievmentEntry("bf0346d72196420bb64171277e895fc2", "74e1d19ad0c144de90c423ece65b4a72", "1234567890123456789012", "2023-04-05", 100),
+        new AchievmentEntry("b4a6221dc281429898a8f29ff5887c2d", "74e1d19ad0c144de90c423ece65b4a72", "OtherUserId", "2000-01-02", 666),
+        new AchievmentEntry("563209930ea44284aef6b31c4d94db20", "fcda469f74c0425bb0f23e13b7bcd92f", "1234567890123456789012", "2023-02-12", 4)
+    ],
 
     login: function (credentials, callback, errorCallback) {
         let errors = TkValidator.validateLogin(credentials);
@@ -180,5 +184,22 @@ let Repository = {
             return;
         }
         callback(this._achievments);
+    },
+
+    loadAchievmentEntries: function(user, achievmentId, callback, errorCallback) {
+        if (TkHelper.isValidJwt(user.jwt) == false) {
+            errorCallback(["You are not logged in. Please re-login."]);
+            return;
+        }
+
+        let entries = [];
+        console.log(`Loading achievment entries for achievment ID ${achievmentId}`);
+        for (let i = 0; i < this._achievmentEntries.length; i++) {
+            if (this._achievmentEntries[i].achievmentId == achievmentId) {
+                entries.push(this._achievmentEntries[i]);
+            }
+        }
+
+        callback(entries);
     }
 };
